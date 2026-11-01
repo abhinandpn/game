@@ -1,64 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101925">
-<title>Flappy Dunk — Court Run</title>
-<style>
-:root{color-scheme:dark;--ink:#f7f4e9;--muted:#aab7c4;--lime:#d9ff67;--orange:#ff7a37}
-*{box-sizing:border-box}
-html,body{width:100%;height:100%;margin:0;overflow:hidden}
-body{display:grid;place-items:center;background:radial-gradient(ellipse at 50% 35%,#263547 0,#131e2a 52%,#0c141d 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
-.game{position:relative;width:min(100vw,60vh);height:min(100dvh,166.6667vw);aspect-ratio:3/5;overflow:hidden;background:#f4e8d3;border:1px solid rgba(255,255,255,.14);border-radius:22px;box-shadow:0 28px 90px #03080dbb,0 0 0 8px #ffffff08}
-canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:absolute;inset:0;pointer-events:none;color:var(--ink)}
-.brand{position:absolute;top:max(18px,env(safe-area-inset-top));left:20px;display:flex;align-items:center;gap:9px;font-size:11px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;color:#f7f4e9cc}
-.brand-mark{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:var(--lime);color:#18222b;font-size:15px;box-shadow:0 3px 12px #10192530}
-.score{position:absolute;top:19px;left:50%;transform:translateX(-50%);text-align:center;text-shadow:0 2px 8px #17202a55}
-.score-label{display:block;font-size:9px;font-weight:850;letter-spacing:.24em;color:#fff9}
-.score-value{display:block;font-size:44px;line-height:1.05;font-weight:950;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
-.best{position:absolute;top:24px;right:18px;padding:7px 10px;border:1px solid #ffffff40;border-radius:999px;background:#10192525;backdrop-filter:blur(8px);font-size:10px;font-weight:800;letter-spacing:.06em;color:#fff}
-.best b{color:var(--lime);margin-left:4px}
-.screen{position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;background:linear-gradient(180deg,#10192510,#10192522);pointer-events:auto}
-.screen[hidden]{display:none}
-.card{width:min(100%,300px);padding:27px 23px 22px;border:1px solid #ffffffb0;border-radius:25px;background:#fff9f0e8;color:#18232d;box-shadow:0 18px 50px #17202a36;backdrop-filter:blur(12px)}
-.eyebrow{margin:0 0 9px;color:#73808a;font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase}
-h1{margin:0;color:#17232d;font-size:clamp(35px,10vw,48px);line-height:.91;font-weight:1000;letter-spacing:-.08em}
-h1 span{color:#ef6931}
-.description{margin:15px auto 21px;max-width:220px;color:#53616b;font-size:13px;line-height:1.5}
-.action{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:49px;border:0;border-radius:14px;background:#182631;color:#f9f6eb;font:850 13px inherit;letter-spacing:.02em;box-shadow:0 6px 0 #0d151c;cursor:pointer;pointer-events:auto;transition:transform .12s,box-shadow .12s}
-.action:active{transform:translateY(4px);box-shadow:0 2px 0 #0d151c}
-.action .arrow{color:var(--lime);font-size:17px}
-.hint{margin:15px 0 0;color:#7a858b;font-size:10px;font-weight:700;letter-spacing:.04em}
-.result{display:none;margin:17px 0 4px;padding:12px 0;border-top:1px solid #18263118;border-bottom:1px solid #18263118}
-.result strong{display:block;font-size:37px;line-height:1;font-weight:950;letter-spacing:-.06em}
-.result span{font-size:9px;font-weight:850;letter-spacing:.18em;text-transform:uppercase;color:#7a858b}
-.game.over .result{display:block}
-.game.over .card{padding-top:23px}
-@media(max-height:560px){.game{border-radius:14px}.brand{top:12px}.score{top:9px}.score-value{font-size:36px}.best{top:14px}.card{padding:18px}.description{margin:10px auto 14px}}
-</style>
-</head>
-<body>
-<main class="game" id="game" aria-label="Flappy Dunk game">
-  <canvas id="c" width="720" height="1200" aria-label="Basketball game court"></canvas>
-  <div class="hud" aria-hidden="true">
-    <div class="brand"><span class="brand-mark">↗</span> COURT RUN</div>
-    <div class="score"><span class="score-label">SCORE</span><span class="score-value" id="score">0</span></div>
-    <div class="best">BEST <b id="best">0</b></div>
-    <section class="screen" id="screen">
-      <div class="card">
-        <p class="eyebrow" id="eyebrow">One more run?</p>
-        <h1 id="headline">FLAPPY<br><span>DUNK</span></h1>
-        <p class="description" id="description">Keep the ball in the air and thread every hoop. Clean swishes are the way to the top.</p>
-        <div class="result"><strong id="final-score">0</strong><span>points scored</span></div>
-        <button class="action" id="start"><span id="button-label">Start game</span><span class="arrow">↗</span></button>
-        <p class="hint" id="hint">TAP OR PRESS SPACE TO FLAP</p>
-      </div>
-    </section>
-  </div>
-</main>
-<script>
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'),game=document.getElementById('game');
 const W=360,H=600,R=17,G=1080,JUMP=385,BX=106,HW=94,GAP=258;
 const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),screenEl=document.getElementById('screen');
@@ -87,6 +26,3 @@ function drawBall(){ctx.save();ctx.translate(BX,ball.y);ctx.save();ctx.rotate(-.
 function draw(){drawCourt();for(const h of hoops)ring(h,false);drawBall();for(const h of hoops)ring(h,true);for(const p of pops){ctx.save();ctx.globalAlpha=Math.min(1,p.a*1.5);ctx.translate(W/2,p.y);ctx.rotate(-.1);star(-79,-8,14,'#e8a82c');star(79,-34,10,'#e8a82c');text(p.txt,0,0,40,'#e98b27','#fff9ed');ctx.restore();p.y-=.55;p.a-=.018}pops=pops.filter(p=>p.a>0)}
 let last=performance.now();function loop(n){const dt=Math.min(.033,(n-last)/1000);last=n;t+=dt;flap=Math.max(0,flap-dt*2.5);update(dt);draw();requestAnimationFrame(loop)}
 reset();requestAnimationFrame(loop);
-</script>
-</body>
-</html>
