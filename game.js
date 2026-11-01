@@ -1,21 +1,22 @@
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'),game=document.getElementById('game');
 const W=360,H=600,R=17,G=1080,JUMP=385,BX=106,HW=94,GAP=258;
-const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),screenEl=document.getElementById('screen');
+const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),screenEl=document.getElementById('screen'),comboEl=document.getElementById('combo'),comboValueEl=document.getElementById('combo-value');
 let best=0;try{best=Number(localStorage.getItem('fds_best'))||0}catch(e){}bestEl.textContent=best;
-let st='ready',score=0,ball,hoops,speed,pops=[],t=0,scroll=0,flap=0;
+let st='ready',score=0,combo=0,ball,hoops,speed,pops=[],t=0,scroll=0,flap=0;
 function resize(){const dpr=Math.min(window.devicePixelRatio||1,2),rect=game.getBoundingClientRect();cv.width=Math.round(rect.width*dpr);cv.height=Math.round(rect.height*dpr);ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0)}
 new ResizeObserver(resize).observe(game);resize();
 const mk=x=>({x,y:190+Math.random()*260,done:false,touched:false});
-function reset(){ball={y:300,vy:0,rot:0};hoops=[mk(330)];score=0;speed=105;pops=[];st='ready';scoreEl.textContent='0';game.classList.remove('over');screenEl.hidden=false;document.getElementById('eyebrow').textContent='One more run?';document.getElementById('headline').innerHTML='FLAPPY<br><span>DUNK</span>';document.getElementById('description').textContent='Keep the ball in the air and thread every hoop. Clean swishes are the way to the top.';document.getElementById('button-label').textContent='Start game';document.getElementById('hint').textContent='TAP OR PRESS SPACE TO FLAP'}
+function reset(){ball={y:300,vy:0,rot:0};hoops=[mk(330)];score=0;combo=0;speed=105;pops=[];st='ready';scoreEl.textContent='0';updateCombo();game.classList.remove('over');screenEl.hidden=false;document.getElementById('eyebrow').textContent='One more run?';document.getElementById('headline').innerHTML='FLAPPY<br><span>DUNK</span>';document.getElementById('description').textContent='Keep the ball in the air and thread every hoop. Clean swishes are the way to the top.';document.getElementById('button-label').textContent='Start game';document.getElementById('hint').textContent='TAP OR PRESS SPACE TO FLAP'}
+function updateCombo(){comboValueEl.textContent=combo+'x';comboEl.classList.toggle('active',combo>0)}
 function die(){st='over';game.classList.add('over');screenEl.hidden=false;document.getElementById('eyebrow').textContent='Run complete';document.getElementById('headline').innerHTML='NICE<br><span>RUN.</span>';document.getElementById('description').textContent=score>best?'A new personal best. The next one is yours.':'The court is waiting. Can you beat your best?';document.getElementById('button-label').textContent='Play again';document.getElementById('hint').textContent='TAP OR PRESS SPACE TO RESTART';document.getElementById('final-score').textContent=score;if(score>best){best=score;bestEl.textContent=best;try{localStorage.setItem('fds_best',best)}catch(e){}}}
 function tap(){if(st==='over'){reset();return}if(st==='ready'){st='play';screenEl.hidden=true}ball.vy=-JUMP;flap=1}
 document.getElementById('start').addEventListener('click',e=>{e.stopPropagation();if(st==='over')reset();tap()});
 game.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;e.preventDefault();tap()});
 addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();tap()}});
 function update(dt){if(st==='ready'){ball.y=300+Math.sin(t*3.5)*7;return}if(st!=='play')return;const py=ball.y;speed=Math.min(168,105+score*2.1);scroll+=speed*dt;ball.vy+=G*dt;ball.y+=ball.vy*dt;ball.rot+=dt*3;if(ball.y<R){ball.y=R;ball.vy=0}if(ball.y>H-R-10){die();return}
-for(const h of hoops){h.x-=speed*dt;for(const rx of [h.x,h.x+HW]){const dx=BX-rx,dy=ball.y-h.y,rr=R+5;if(Math.abs(dx)<rr&&Math.hypot(dx,dy)<rr){h.touched=true;const need=Math.sqrt(rr*rr-dx*dx),dir=dy>=0?1:-1;ball.y=h.y+dir*need;const ny=(ball.y-h.y)/rr,dot=ball.vy*ny;if(dot<0)ball.vy-=1.6*dot*ny}}
+for(const h of hoops){h.x-=speed*dt;for(const rx of [h.x,h.x+HW]){const dx=BX-rx,dy=ball.y-h.y,rr=R+5;if(Math.abs(dx)<rr&&Math.hypot(dx,dy)<rr){if(!h.touched){h.touched=true;combo=0;updateCombo()}const need=Math.sqrt(rr*rr-dx*dx),dir=dy>=0?1:-1;ball.y=h.y+dir*need;const ny=(ball.y-h.y)/rr,dot=ball.vy*ny;if(dot<0)ball.vy-=1.6*dot*ny}}
 // A basket counts only when the ball travels downward through the opening.
-if(!h.done&&py<h.y&&ball.y>=h.y&&BX-R>h.x+4&&BX+R<h.x+HW-4){h.done=true;score++;scoreEl.textContent=score;pops.push({txt:h.touched?'NICE!':'SWISH!',a:1,y:150})}
+if(!h.done&&py<h.y&&ball.y>=h.y&&BX-R>h.x+4&&BX+R<h.x+HW-4){h.done=true;let points;if(h.touched){combo=0;points=1}else{combo++;points=combo}score+=points;scoreEl.textContent=score;updateCombo();pops.push({txt:h.touched?'+1 RIM':combo+'X!',a:1,y:150})}
 if(!h.done&&h.x+HW+5<BX-R){die();return}}
 while(hoops[hoops.length-1].x<W+60)hoops.push(mk(hoops[hoops.length-1].x+GAP));hoops=hoops.filter(h=>h.x>-HW-30)}
 function text(s,x,y,size,col='#fff',stroke){ctx.font='900 '+size+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';if(stroke){ctx.lineWidth=6;ctx.lineJoin='round';ctx.strokeStyle=stroke;ctx.strokeText(s,x,y)}ctx.fillStyle=col;ctx.fillText(s,x,y)}

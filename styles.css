@@ -10,6 +10,9 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .score{position:absolute;top:19px;left:50%;transform:translateX(-50%);text-align:center;text-shadow:0 2px 8px #17202a55}
 .score-label{display:block;font-size:9px;font-weight:850;letter-spacing:.24em;color:#fff9}
 .score-value{display:block;font-size:44px;line-height:1.05;font-weight:950;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.combo{position:absolute;top:91px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid #ffffff45;border-radius:999px;background:#10192530;backdrop-filter:blur(8px);font-size:9px;font-weight:850;letter-spacing:.14em;color:#fff;text-shadow:0 1px 5px #17202a55}
+.combo b{color:var(--lime);font-size:12px;letter-spacing:0;font-variant-numeric:tabular-nums}
+.combo.active{box-shadow:0 0 18px #d9ff6740}
 .best{position:absolute;top:24px;right:18px;padding:7px 10px;border:1px solid #ffffff40;border-radius:999px;background:#10192525;backdrop-filter:blur(8px);font-size:10px;font-weight:800;letter-spacing:.06em;color:#fff}
 .best b{color:var(--lime);margin-left:4px}
 .screen{position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;background:linear-gradient(180deg,#10192510,#10192522);pointer-events:auto}
@@ -28,4 +31,4 @@ h1 span{color:#ef6931}
 .result span{font-size:9px;font-weight:850;letter-spacing:.18em;text-transform:uppercase;color:#7a858b}
 .game.over .result{display:block}
 .game.over .card{padding-top:23px}
-@media(max-height:560px){.game{border-radius:14px}.brand{top:12px}.score{top:9px}.score-value{font-size:36px}.best{top:14px}.card{padding:18px}.description{margin:10px auto 14px}}
+@media(max-height:560px){.game{border-radius:14px}.brand{top:12px}.score{top:9px}.score-value{font-size:36px}.combo{top:66px}.best{top:14px}.card{padding:18px}.description{margin:10px auto 14px}}
